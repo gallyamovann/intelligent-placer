@@ -1,7 +1,6 @@
 import cv2
 
 K_SIZE = (7, 7)
-K_BLUR = (5, 5)
 MIN_AREA = 1000
 THRESHOLD_LOW = 100
 THRESHOLD_HIGH = 400
