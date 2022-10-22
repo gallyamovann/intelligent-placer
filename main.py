@@ -135,6 +135,6 @@ def check_diameter(path_tests):
         for i in range(len(radius) - 1):
             if radius[i] > radius[-1]:
                 is_fit = False
-        result.append()
+        result.append(is_fit)
 
     return result
