@@ -96,7 +96,7 @@ def demonstration_test(path_tests):
             axs_p = axs_p.flatten()
             for im, ax in zip(imgs_items, axs_p):
                 ax.imshow(im)
-            for i, ax in enumerate(axs.ravel()):
+            for i, ax in enumerate(axs_p.ravel()):
                 ax.set_title("contour #{}".format(i))
         else:
             plt.title("contour")
