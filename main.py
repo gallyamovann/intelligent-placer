@@ -100,41 +100,29 @@ def demonstration_test(path_tests):
         plt.show()
 
 
-def check_area(path_tests):
+def run_tests(path_tests):
     paths = []
     for p_test in path_tests.glob(PNG_FORMAT):
         paths.append(p_test)
-    result = []
-    for p in paths:
-        image = cv2.imread(str(p))
-        _, binary, _, cnts = get_fill_masks(image.copy())
-        areas = [cv2.contourArea(cnt) for cnt in cnts]
-        sum_obj_area = 0
-        for i in range(len(areas) - 1):
-            sum_obj_area += areas[i]
-        if sum_obj_area < areas[-1]:
-            result.append("True")
-        else:
-            result.append("False")
-    return result
-
-
-def check_diameter(path_tests):
-    paths = []
-    for p_test in path_tests.glob(PNG_FORMAT):
-        paths.append(p_test)
-    result = []
+    result_area = []
+    result_radius = []
     for p in paths:
         radius = []
         image = cv2.imread(str(p))
-        _, binary, _, cnts = get_fill_masks(image.copy())
+        _, _, _, cnts = get_fill_masks(image.copy())
+        areas = [cv2.contourArea(cnt) for cnt in cnts]
+        sum_obj_area = 0
         for cnt in cnts:
             (_, _), r = cv2.minEnclosingCircle(cnt)
             radius.append(2.0 * r)
         is_fit = True
-        for i in range(len(radius) - 1):
+        for i in range(len(areas) - 1):
+            sum_obj_area += areas[i]
             if radius[i] > radius[-1]:
                 is_fit = False
-        result.append(is_fit)
-
-    return result
+        if sum_obj_area < areas[-1]:
+            result_area.append("True")
+        else:
+            result_area.append("False")
+        result_radius.append(is_fit)
+    return result_area, result_radius
