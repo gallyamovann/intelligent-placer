@@ -1,7 +1,6 @@
 from detection import get_fill_masks
 import cv2
 from matplotlib import pyplot as plt
-from pathlib import Path
 
 PNG_FORMAT = "*.png"
 RGB_WHITE = (255, 255, 255)
@@ -9,6 +8,7 @@ RGB_BLACK = (0, 0, 0)
 THICKNESS = 5
 CONTOUR_IDX = -1
 BORDER = 10
+
 
 def demonstration_items(path_items):
     paths = []
@@ -19,7 +19,7 @@ def demonstration_items(path_items):
         print(p)
         # загрузка изображения
         image = cv2.imread(str(p))
-        img, binary, polys = get_fill_masks(image.copy())
+        img, binary, polys, _ = get_fill_masks(image.copy())
 
         x, y, w, h = cv2.boundingRect(polys[0])
         # ROI (Region of interest)
@@ -57,7 +57,7 @@ def demonstration_test(path_tests):
     for p in paths:
         # загрузка изображения
         image = cv2.imread(str(p))
-        img, binary, polys = get_fill_masks(image.copy())
+        img, binary, polys, _ = get_fill_masks(image.copy())
         bbox = img.copy()
 
         contours = img.copy()
@@ -98,3 +98,43 @@ def demonstration_test(path_tests):
             plt.title("contour")
             plt.imshow(imgs_items[0])
         plt.show()
+
+
+def check_area(path_tests):
+    paths = []
+    for p_test in path_tests.glob(PNG_FORMAT):
+        paths.append(p_test)
+    result = []
+    for p in paths:
+        image = cv2.imread(str(p))
+        _, binary, _, cnts = get_fill_masks(image.copy())
+        areas = [cv2.contourArea(cnt) for cnt in cnts]
+        sum_obj_area = 0
+        for i in range(len(areas) - 1):
+            sum_obj_area += areas[i]
+        if sum_obj_area < areas[-1]:
+            result.append("True")
+        else:
+            result.append("False")
+    return result
+
+
+def check_diameter(path_tests):
+    paths = []
+    for p_test in path_tests.glob(PNG_FORMAT):
+        paths.append(p_test)
+    result = []
+    for p in paths:
+        radius = []
+        image = cv2.imread(str(p))
+        _, binary, _, cnts = get_fill_masks(image.copy())
+        for cnt in cnts:
+            (_, _), r = cv2.minEnclosingCircle(cnt)
+            radius.append(2.0 * r)
+        is_fit = True
+        for i in range(len(radius) - 1):
+            if radius[i] > radius[-1]:
+                is_fit = False
+        result.append()
+
+    return result

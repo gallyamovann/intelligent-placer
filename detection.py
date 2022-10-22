@@ -30,14 +30,16 @@ def get_fill_masks(image):
     binary = cv2.cvtColor(binary_img, cv2.COLOR_BGR2GRAY)
     # зададим список для найденных масок
     masks_coords = []
+    cnts = []
     for cnt in contours:
         area = cv2.contourArea(cnt)
         # обнаруженные небольшие дефекты исключаем, задав минимальную площадь
         if area > MIN_AREA:
+            cnts.append(cnt)
             peri = cv2.arcLength(cnt, True)
             # аппроксимируем найденный контур многоугольником
             approx = cv2.approxPolyDP(cnt, APPROX_CURVE * peri, True)
             masks_coords.append(approx)
             cv2.drawContours(binary, [approx], CONTOUR_IDX, RGB, THICKNESS)
             cv2.fillPoly(binary, pts=[approx], color=RGB)
-    return image, binary, masks_coords
+    return image, binary, masks_coords, cnts
