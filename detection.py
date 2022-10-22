@@ -19,17 +19,21 @@ def get_fill_masks(image):
     edged = cv2.Canny(blur, THRESHOLD_LOW, THRESHOLD_HIGH)
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, K_SIZE)
     closed = cv2.morphologyEx(edged, cv2.MORPH_CLOSE, kernel)
-    contours, hierarchy = cv2.findContours(closed.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    # находим контуры
+    contours, _ = cv2.findContours(closed.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    # если самый большой контур - это контур листа, то удаляем его и ищем внутренние контуры
     for cnt in contours:
         if cv2.contourArea(cnt) > (height - 200) * (width - 200):
             x, y, w, h = cv2.boundingRect(cnt)
             image = image[y + 50:y + h - 50, x + 50:x + w - 50]
             closed = closed[y + 50:y + h - 50, x + 50:x + w - 50]
-            contours, hierarchy = cv2.findContours(closed.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            contours, _ = cv2.findContours(closed.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    # применяем бинаризацию
     _, binary_img = cv2.threshold(image, 150, 250, cv2.THRESH_BINARY)
     binary = cv2.cvtColor(binary_img, cv2.COLOR_BGR2GRAY)
     # зададим список для найденных масок
     masks_coords = []
+    # а также для контуров
     cnts = []
     for cnt in contours:
         area = cv2.contourArea(cnt)

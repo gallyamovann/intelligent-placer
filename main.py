@@ -9,12 +9,14 @@ THICKNESS = 5
 CONTOUR_IDX = -1
 BORDER = 10
 
+# получим все изображения необходимого формата из папки 
+def get_paths(path):
+    paths = []
+    for p_test in path.glob(PNG_FORMAT):
+        paths.append(p_test)
 
 def demonstration_items(path_items):
-    paths = []
-    for p_item in path_items.glob(PNG_FORMAT):
-        paths.append(p_item)
-
+    paths = get_paths(path_items)
     for p in paths:
         print(p)
         # загрузка изображения
@@ -22,14 +24,17 @@ def demonstration_items(path_items):
         img, binary, polys, _ = get_fill_masks(image.copy())
 
         x, y, w, h = cv2.boundingRect(polys[0])
-        # ROI (Region of interest)
+        # обрежем изображение
         roi = img[y - BORDER: y + h + BORDER, x - BORDER: x + w + BORDER]
+        # обрежем бинарное изображение
         roi_binary = binary[y - BORDER: y + h + BORDER, x - BORDER: x + w + BORDER]
         contours = img.copy()
+        # нарисуем контуры на исходном изображении
         cv2.drawContours(contours, polys, CONTOUR_IDX, RGB_WHITE, THICKNESS)
 
         imgs = []
-
+        # примеры представления изображений 
+        # (исходное, бинарное, обрезанные(+бинарное/с контурами), с контурами)
         imgs.append(image)
         imgs.append(binary)
         imgs.append(roi)
@@ -37,8 +42,10 @@ def demonstration_items(path_items):
         imgs.append(contours[y - BORDER: y + h + BORDER, x - BORDER: x + w + BORDER])
         imgs.append(contours)
 
+        # покажем результаты
         _, axs = plt.subplots(1, 6, figsize=(12, 12))
         axs = axs.flatten()
+        # отобразим изображения
         for im, ax in zip(imgs, axs):
             ax.imshow(im)
         axs[0].set_title("Image")
@@ -51,9 +58,7 @@ def demonstration_items(path_items):
 
 
 def demonstration_test(path_tests):
-    paths = []
-    for p_test in path_tests.glob(PNG_FORMAT):
-        paths.append(p_test)
+    paths = get_paths(path_tests)
     for p in paths:
         # загрузка изображения
         image = cv2.imread(str(p))
@@ -63,6 +68,7 @@ def demonstration_test(path_tests):
         contours = img.copy()
         cv2.drawContours(contours, polys, CONTOUR_IDX, RGB_WHITE, THICKNESS)
         imgs_items = []
+        # изобразим контуры на каждом предмете и обрежем затем предметы по bbox
         for poly in polys:
             x, y, w, h = cv2.boundingRect(poly)
             bbox = cv2.rectangle(bbox, (x, y), (x + w, y + h), RGB_BLACK, THICKNESS)
@@ -73,6 +79,8 @@ def demonstration_test(path_tests):
 
         imgs = []
 
+        # примеры представления изображений 
+        # (исходное, с bbox, бинарное, с контурами)
         imgs.append(image)
         imgs.append(bbox)
         imgs.append(binary)
@@ -84,10 +92,12 @@ def demonstration_test(path_tests):
         axs[1].set_title("With bbox")
         axs[2].set_title("Binary image")
         axs[3].set_title("With contours")
+        # отобразим изображения
         for im, ax in zip(imgs, axs):
             ax.imshow(im)
         plt.show()
         _, axs_p = plt.subplots(1, len(polys), figsize=(12, 12))
+        # отобразим каждый предмет в ограничивающем bbox
         if len(polys) > 1:
             axs_p = axs_p.flatten()
             for im, ax in zip(imgs_items, axs_p):
@@ -99,23 +109,26 @@ def demonstration_test(path_tests):
             plt.imshow(imgs_items[0])
         plt.show()
 
-
+# сделаем проверку по площади и диаметру объектов в сравнении с многоугольником
 def run_tests(path_tests):
-    paths = []
-    for p_test in path_tests.glob(PNG_FORMAT):
-        paths.append(p_test)
+    paths = get_paths(path_tests)
+    # храним результаты проверки в двух списках ниже
     result_area = []
     result_radius = []
     for p in paths:
         radius = []
         image = cv2.imread(str(p))
         _, _, _, cnts = get_fill_masks(image.copy())
+        # считаем площади по контурам
         areas = [cv2.contourArea(cnt) for cnt in cnts]
         sum_obj_area = 0
+        # находим минимально ограничивающий круг и его радиус
         for cnt in cnts:
             (_, _), r = cv2.minEnclosingCircle(cnt)
             radius.append(2.0 * r)
         is_fit = True
+        # считаем суммарную площадь и сравниваем с площадью многоугольника
+        # сравниваем радиус каждого предмета с радиусом многоугольника
         for i in range(len(areas) - 1):
             sum_obj_area += areas[i]
             if radius[i] > radius[-1]:
@@ -125,4 +138,5 @@ def run_tests(path_tests):
         else:
             result_area.append("False")
         result_radius.append(is_fit)
+        # выводим результат
     return result_area, result_radius
