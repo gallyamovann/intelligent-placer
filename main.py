@@ -9,11 +9,14 @@ THICKNESS = 5
 CONTOUR_IDX = -1
 BORDER = 10
 
+
 # получим все изображения необходимого формата из папки 
 def get_paths(path):
     paths = []
     for p_test in path.glob(PNG_FORMAT):
         paths.append(p_test)
+    return paths
+
 
 def demonstration_items(path_items):
     paths = get_paths(path_items)
@@ -108,6 +111,7 @@ def demonstration_test(path_tests):
             plt.title("contour")
             plt.imshow(imgs_items[0])
         plt.show()
+
 
 # сделаем проверку по площади и диаметру объектов в сравнении с многоугольником
 def run_tests(path_tests):
