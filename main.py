@@ -144,3 +144,4 @@ def run_tests(path_tests):
         result_radius.append(is_fit)
         # выводим результат
     return result_area, result_radius
+s
