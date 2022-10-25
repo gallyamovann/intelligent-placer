@@ -1,22 +1,13 @@
 import cv2
 
-K_SIZE = (7, 7)
-BLUR = (1, 1)
-SIGMA_BLUR = 0
-MIN_AREA = 1000
-THRESHOLD_LOW = 100
-THRESHOLD_HIGH = 400
-APPROX_CURVE = 0.000001
-RGB = (0, 0, 0)
-THICKNESS = 5
-CONTOUR_IDX = -1
+MIN_AREA = 1000  # площадь меньше, которой обнаруженные маски будут считаться дефектными
 
 
 def get_edges(image):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    blur = cv2.GaussianBlur(gray, BLUR, SIGMA_BLUR)
-    edged = cv2.Canny(blur, THRESHOLD_LOW, THRESHOLD_HIGH)
-    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, K_SIZE)
+    blur = cv2.GaussianBlur(gray, (1, 1), 0)
+    edged = cv2.Canny(blur, 100, 400)
+    kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (7, 7))
     return cv2.morphologyEx(edged, cv2.MORPH_CLOSE, kernel)
 
 
@@ -44,10 +35,10 @@ def draw_contours_mask(binary, contours):
             cnts.append(cnt)
             peri = cv2.arcLength(cnt, True)
             # аппроксимируем найденный контур многоугольником
-            approx = cv2.approxPolyDP(cnt, APPROX_CURVE * peri, True)
+            approx = cv2.approxPolyDP(cnt, 0.000001 * peri, True)
             masks_coords.append(approx)
-            cv2.drawContours(binary, [approx], CONTOUR_IDX, RGB, THICKNESS)
-            cv2.fillPoly(binary, pts=[approx], color=RGB)
+            cv2.drawContours(binary, [approx], contouridx=-1, color=(0, 0, 0), thickness=5)
+            cv2.fillPoly(binary, pts=[approx], color=(0, 0, 0))
     return cnts, masks_coords, binary
 
 
