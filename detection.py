@@ -37,7 +37,7 @@ def draw_contours_mask(binary, contours):
             # аппроксимируем найденный контур многоугольником
             approx = cv2.approxPolyDP(cnt, 0.000001 * peri, True)
             masks_coords.append(approx)
-            cv2.drawContours(binary, [approx], contouridx=-1, color=(0, 0, 0), thickness=5)
+            cv2.drawContours(binary, [approx], -1, (0, 0, 0), 5)
             cv2.fillPoly(binary, pts=[approx], color=(0, 0, 0))
     return cnts, masks_coords, binary
 
@@ -52,5 +52,5 @@ def get_fill_masks(image):
     # применяем бинаризацию
     _, binary_img = cv2.threshold(image, 150, 250, cv2.THRESH_BINARY)
     binary = cv2.cvtColor(binary_img, cv2.COLOR_BGR2GRAY)
-    cnts, masks_coords, binary = draw_contours_mask(binary, contours)
+    cnts, masks_coords, binary = draw_contours_mask(binary, cnt)
     return image, binary, masks_coords, cnts
