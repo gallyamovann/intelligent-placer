@@ -1,6 +1,6 @@
 import cv2
 
-K_SIZE = (4, 4)
+K_SIZE = (7, 7)
 BLUR = (1, 1)
 SIGMA_BLUR = 0
 MIN_AREA = 1000
