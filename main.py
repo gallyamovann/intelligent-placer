@@ -5,7 +5,7 @@ import numpy as np
 from shapely.geometry import Polygon
 import shapely.ops as so
 
-PNG_FORMAT = "*."
+FORMAT = "*"
 RGB_WHITE = (255, 255, 255)
 RGB_BLACK = (0, 0, 0)
 THICKNESS = 5
@@ -16,7 +16,7 @@ BORDER = 10
 # получим все изображения необходимого формата из папки 
 def get_paths(path):
     paths = []
-    for p_test in path.glob(PNG_FORMAT):
+    for p_test in path.glob(FORMAT):
         paths.append(p_test)
     return paths
 
