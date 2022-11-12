@@ -1,12 +1,13 @@
 import cv2
 
-MIN_AREA = 1000  # площадь меньше, которой обнаруженные маски будут считаться дефектными
+MIN_AREA = 100  # площадь меньше, которой обнаруженные маски будут считаться дефектными
 
 
 def get_edges(image):
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
-    blur = cv2.GaussianBlur(gray, (1, 1), 0)
-    edged = cv2.Canny(blur, 100, 400)
+    # blur = cv2.GaussianBlur(gray, (1, 1), 0)
+    # edged = cv2.Canny(blur, 100, 400)
+    edged = cv2.Canny(gray, 100, 400)
     kernel = cv2.getStructuringElement(cv2.MORPH_RECT, (7, 7))
     return cv2.morphologyEx(edged, cv2.MORPH_CLOSE, kernel)
 
@@ -18,7 +19,7 @@ def get_cut_images(image, closed, contours):
             x, y, w, h = cv2.boundingRect(cnt)
             image = image[y + 50:y + h - 50, x + 50:x + w - 50]
             closed = closed[y + 50:y + h - 50, x + 50:x + w - 50]
-            contours, _ = cv2.findContours(closed.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+            contours, _ = cv2.findContours(closed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
             break
     return image, closed, contours
 
@@ -45,9 +46,10 @@ def draw_contours_mask(binary, contours):
 def get_fill_masks(image):
     # ищем границы
     closed = get_edges(image)
-    # находим контуры
+    # находим контуры листа
     contours, _ = cv2.findContours(closed.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
-    # если самый большой контур - это контур листа, то удаляем его и ищем внутренние контуры
+    # если самый большой контур - это контур листа (а именно на входном изображении),
+    # то удаляем его и ищем внутренние контуры
     image, closed, cnt = get_cut_images(image, closed, contours)
     # применяем бинаризацию
     _, binary_img = cv2.threshold(image, 150, 250, cv2.THRESH_BINARY)
