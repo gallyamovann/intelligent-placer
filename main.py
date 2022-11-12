@@ -151,7 +151,7 @@ def run_tests(path_tests):
     for p in paths:
         radius = []
         image = cv2.imread(str(p))
-        _, _, _, cnts = get_fill_masks(image.copy())
+        _, _, polys, cnts = get_fill_masks(image)
         # считаем площади по контурам
         areas = [cv2.contourArea(cnt) for cnt in cnts]
         sum_obj_area = 0
@@ -162,11 +162,12 @@ def run_tests(path_tests):
         is_fit = True
         # считаем суммарную площадь и сравниваем с площадью многоугольника
         # сравниваем радиус каждого предмета с радиусом многоугольника
-        for i in range(len(areas) - 1):
+        polygon_index = np.argmin([np.min(p[:, 0, 1]) for p in polys])
+        for i in range(len(areas)):
             sum_obj_area += areas[i]
-            if radius[i] > radius[-1]:
+            if radius[i] > radius[polygon_index]:
                 is_fit = False
-        if sum_obj_area < areas[-1]:
+        if sum_obj_area < 2 * areas[polygon_index]:
             result_area.append("True")
         else:
             result_area.append("False")

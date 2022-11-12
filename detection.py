@@ -1,6 +1,6 @@
 import cv2
 
-MIN_AREA = 100  # площадь меньше, которой обнаруженные маски будут считаться дефектными
+MIN_AREA = 1000  # площадь меньше, которой обнаруженные маски будут считаться дефектными
 
 
 def get_edges(image):
@@ -29,6 +29,7 @@ def draw_contours_mask(binary, contours):
     masks_coords = []
     # а также для контуров
     cnts = []
+    contours = sorted(contours, key=lambda x: cv2.contourArea(x), reverse=True)
     for cnt in contours:
         area = cv2.contourArea(cnt)
         # обнаруженные небольшие дефекты исключаем, задав минимальную площадь
