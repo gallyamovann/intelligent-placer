@@ -48,7 +48,7 @@ def get_fill_masks(image):
     # ищем границы
     closed = get_edges(image)
     # находим контуры листа
-    contours, _ = cv2.findContours(closed.copy(), cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
+    contours, _ = cv2.findContours(closed, cv2.RETR_EXTERNAL, cv2.CHAIN_APPROX_SIMPLE)
     # если самый большой контур - это контур листа (а именно на входном изображении),
     # то удаляем его и ищем внутренние контуры
     image, closed, cnt = get_cut_images(image, closed, contours)
