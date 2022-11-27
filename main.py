@@ -17,8 +17,9 @@ BORDER = 10
 
 
 # получим все изображения необходимого формата из папки 
-def get_paths(path, p_test=None):
+def get_paths(path):
     paths = []
+    p_test = None
     for p_test in path.glob(FORMAT_PNG) or p_test in path.glob(FORMAT_JPG) or p_test in path.glob(FORMAT_JPEG):
         if p_test is not "background.jpg":
             paths.append(p_test)
