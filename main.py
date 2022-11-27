@@ -5,7 +5,10 @@ import numpy as np
 from shapely.geometry import Polygon
 import shapely.ops as so
 
-FORMAT = "*"
+FORMAT_PNG = "*.png"
+FORMAT_JPG = "*.jpg"
+FORMAT_JPEG = "*.jpeg"
+
 RGB_WHITE = (255, 255, 255)
 RGB_BLACK = (0, 0, 0)
 THICKNESS = 5
@@ -14,10 +17,11 @@ BORDER = 10
 
 
 # получим все изображения необходимого формата из папки 
-def get_paths(path):
+def get_paths(path, p_test=None):
     paths = []
-    for p_test in path.glob(FORMAT):
-        paths.append(p_test)
+    for p_test in path.glob(FORMAT_PNG) or p_test in path.glob(FORMAT_JPG) or p_test in path.glob(FORMAT_JPEG):
+        if p_test is not "background.jpg":
+            paths.append(p_test)
     return paths
 
 
