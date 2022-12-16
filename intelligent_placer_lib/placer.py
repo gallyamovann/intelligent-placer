@@ -86,7 +86,7 @@ def check_area(areas, polygon_index):
 
 def plot_image(contours, image):
     """
-    Изображаем изображение с масками на многоугольниках и предметах, а также контурах
+    Отображаем изображение с масками на многоугольниках и предметах, а также контурах
     """
     new_image = image.copy()
     for cnt in contours:
@@ -105,7 +105,7 @@ def plot_image(contours, image):
     plt.show()
 
 
-def run(image_path: str, shift_step=5, rotate_step=5):
+def run(image_path: str, shift_step=10, rotate_step=5):
     """
     Общая функция, которая обрабатывает полученное изображение и запускает алгоритм расстановки
     """
