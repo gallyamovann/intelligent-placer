@@ -32,6 +32,7 @@ def get_contours(image):
 
 
 def place_object(poly, obj, placed_objects,
+                 field_size,
                  shift_step=10,
                  rotate_step=10,
                  min_degree=0,
@@ -39,11 +40,13 @@ def place_object(poly, obj, placed_objects,
     """
     Функция размещения многоугольников
     """
+    min_x, min_y = -int(obj.centroid.x), -int(obj.centroid.y)
+    max_x, max_y = np.array(field_size) - np.array([int(obj.centroid.x), int(obj.centroid.y)])
     intersect_placed = True
     # проходим по х-координатам
-    for dx in range(-int(obj.bounds[0]), int(poly.bounds[2]), shift_step):
+    for dx in range(min_x, max_x, shift_step):
         # проходим по у-координатам
-        for dy in range(-int(obj.bounds[1]), int(poly.bounds[3]), shift_step):
+        for dy in range(min_y, max_y, shift_step):
             translated = translate(obj, dx, dy)
             # вращаем предмет вокруг себя
             for dr in range(min_degree, max_degree, rotate_step):
@@ -134,6 +137,7 @@ def run(image_path: str, shift_step=10, rotate_step=5):
         diameter_fit = check_diameter(radius, polygon_index)
         plot_image(contours, image)
         result = False
+        height, width = image.shape[:2]
         # если элементарные проверки пройдены
         if areas_fit and diameter_fit:
             placed_objects = []
@@ -143,6 +147,7 @@ def run(image_path: str, shift_step=10, rotate_step=5):
                 result = place_object(polygon,
                                       make_valid(obj),
                                       placed_objects,
+                                      (height, width),
                                       shift_step=shift_step,
                                       rotate_step=rotate_step,
                                       min_degree=0,
