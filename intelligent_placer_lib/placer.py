@@ -38,7 +38,7 @@ def place_object(poly, obj, placed_objects,
                  min_degree=0,
                  max_degree=180):
     """
-    Функция размещения многоугольников
+    Функция размещения объектов во многоугольнике
     """
     min_x, min_y = -int(obj.centroid.x), -int(obj.centroid.y)
     max_x, max_y = np.array(field_size) - np.array([int(obj.centroid.x), int(obj.centroid.y)])
